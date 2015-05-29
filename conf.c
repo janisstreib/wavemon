@@ -20,9 +20,13 @@
 #include "wavemon.h"
 #include <pwd.h>
 #include <sys/types.h>
+#include <stdlib.h>
+#include <search.h>
 
 /* GLOBALS */
 #define MAX_IFLIST_ENTRIES 64
+#define MAX_DEFINITIONS 256
+
 static char *if_list[MAX_IFLIST_ENTRIES]; /* array of WiFi interface names */
 int conf_items;			/* index into array storing menu items */
 
@@ -78,6 +82,7 @@ struct wavemon_conf conf = {
 	.hthreshold		= -10,
 
 	.startup_scr		= 0,
+	.def_file 		= NULL
 };
 
 /** Populate interface list */
@@ -536,8 +541,9 @@ void getconf(int argc, char *argv[])
 	conf_get_interface_list(true);
 	init_conf_items();
 	read_cf();
-
-	while ((arg = getopt(argc, argv, "dghi:rv")) >= 0) {
+	int i = 0;
+	hcreate(MAX_DEFINITIONS);
+	while ((arg = getopt(argc, argv, "dghi:rvs")) >= 0) {
 		switch (arg) {
 		case 'd':
 			if (if_list[0])
@@ -561,14 +567,53 @@ void getconf(int argc, char *argv[])
 		case 'v':
 			version++;
 			break;
+		case 's':
+			conf.def_file = argv[i+2];
+			FILE * fp;
+			fp = fopen(conf.def_file, "r");
+			if(fp == NULL) {
+				err_quit("definition file '%s' doesn't exist.",
+                                         conf.def_file);
+			}
+			char * line = NULL;
+       			size_t len = 0;
+       			ssize_t read;
+			ENTRY e, *ep;
+			while ((read = getline(&line, &len, fp)) != -1) {
+				char *essid;
+				char *name;
+				essid = strtok(line, "=");
+				name = strtok(NULL, "=");
+				char *mallessid, *mallname;
+				int essidlen = strlen(essid)+1;
+				int namelen = strlen(name);
+				name[namelen-1] = 0;
+				mallessid = (char*)malloc(essidlen * sizeof(char));
+				mallname = (char*)malloc((namelen * sizeof(char)));
+				strcpy(mallessid, essid);
+				strcpy(mallname, name);
+				e.key = mallessid;
+				e.data = mallname;
+				ep = hsearch(e, ENTER);
+				if (ep == NULL) {
+         				fprintf(stderr, "entry failed\n");
+            				exit(EXIT_FAILURE);
+        			}
+       			}
+
+       			fclose(fp);
+       			if (line)
+           			free(line);
+			break;
 		default:
 			/* bad argument. bad bad */
 			exit(EXIT_FAILURE);
 		}
+		i++;
 	}
 
 	if (version) {
-		printf("wavemon %s", PACKAGE_VERSION);
+		printf("wavemon %s (patched for SCC (KIT))\n", PACKAGE_VERSION);
 		printf(" with %s and %s.\n", we_version(), curses_version());
 		printf("Distributed under the terms of the GPLv3.\n%s", help ? "\n" : "");
 	}

@@ -18,7 +18,7 @@
  * Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "iw_if.h"
-
+#include <search.h>
 /* GLOBALS */
 static WINDOW *w_levels, *w_stats, *w_if, *w_info, *w_net;
 static struct timer dyn_updates;
@@ -253,9 +253,23 @@ static void display_info(WINDOW *w_if, WINDOW *w_info)
 		else
 			waddstr(w_info, ",  access point: ");
 
-		if (info.cap_ap)
-			waddstr_b(w_info, format_bssid(&info.ap_addr));
-		else
+		if (info.cap_ap) {
+			 char essid[128];
+                        ENTRY e;
+                        ENTRY *ep = NULL;
+                        char *addr = ether_addr(&info.ap_addr);
+                        e.key = addr;
+                        e.data = ""; //WTF
+                        ep = hsearch(e, FIND);
+                        if(ep != NULL) {
+                                sprintf(essid, "%s (%s)", addr, ep->data);
+                        }
+                        else {
+                                sprintf(essid, "%s", addr);
+                        }
+			waddstr_b(w_info, essid);
+
+		} else
 			waddstr(w_info, "n/a");
 	}
 

@@ -144,6 +144,7 @@ extern struct wavemon_conf {
 		lthreshold_action,	/* disabled|beep|flash|beep+flash */
 		hthreshold_action,	/* disabled|beep|flash|beep+flash */
 		startup_scr;		/* info|histogram|aplist */
+	char*  def_file;
 } conf;
 
 /*

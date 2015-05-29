@@ -284,6 +284,7 @@ struct cnt {
  * @mutex:         protects against concurrent consumer/producer access
  */
 struct scan_result {
+	char 		  result_name[128];
 	struct scan_entry *head;
 	char		  msg[128];
 	uint16_t	  max_essid_len;

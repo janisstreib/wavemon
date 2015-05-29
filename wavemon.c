@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 	sigset_t blockmask, oldmask;
 
 	getconf(argc, argv);
-
+	printf("Parsing passed: %s", conf.def_file);
 	if (!isatty(STDIN_FILENO))
 		errx(1, "input is not from a terminal");
 

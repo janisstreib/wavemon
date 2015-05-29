@@ -18,7 +18,8 @@
  * Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "iw_if.h"
-
+#include <search.h>
+#include <stdlib.h>
 #define START_LINE	2	/* where to begin the screen */
 
 /* GLOBALS */
@@ -117,7 +118,21 @@ static void display_aplist(WINDOW *w_aplst)
 			wattron(w_aplst, COLOR_PAIR(col));
 			waddstr(w_aplst, s);
 		}
-		waddstr(w_aplst, ether_addr(&cur->ap_addr));
+		char essid[128];
+                        ENTRY e;
+                        ENTRY *ep = NULL;
+			char *addr = ether_addr(&cur->ap_addr);
+                        e.key = addr;
+			e.data = ""; //WTF
+			ep = hsearch(e, FIND);
+                        if(ep != NULL) {
+                                sprintf(essid, "%s (%s)", addr, ep->data);
+                        }
+                        else {
+                                sprintf(essid, "%s", addr);
+                        }
+
+		waddstr(w_aplst, essid);
 
 		wattroff(w_aplst, COLOR_PAIR(col));
 
