@@ -625,6 +625,7 @@ void getconf(int argc, char *argv[])
 		printf("  -i <ifname>   Use specified network interface (default: auto)\n");
 		printf("  -r            Generate random levels (for testing purposes)\n");
 		printf("  -v            Print version number\n");
+		printf("  -s <filename> BSSID to name resulution file (in <bssid>=<name> style)\n");
 	} else if (dump) {
 		dump_parameters();
 	}
