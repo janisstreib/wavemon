@@ -126,7 +126,7 @@ static void display_aplist(WINDOW *w_aplst)
 			e.data = ""; //WTF
 			ep = hsearch(e, FIND);
                         if(ep != NULL) {
-                                sprintf(essid, "%s (%s)", addr, ep->data);
+                                sprintf(essid, "%s", ep->data);
                         }
                         else {
                                 sprintf(essid, "%s", addr);
