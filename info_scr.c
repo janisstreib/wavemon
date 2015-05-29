@@ -257,7 +257,7 @@ static void display_info(WINDOW *w_if, WINDOW *w_info)
 			 char essid[128];
                         ENTRY e;
                         ENTRY *ep = NULL;
-                        char *addr = ether_addr(&info.ap_addr);
+                        char *addr = format_bssid(&info.ap_addr);
                         e.key = addr;
                         e.data = ""; //WTF
                         ep = hsearch(e, FIND);
