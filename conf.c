@@ -583,7 +583,11 @@ void getconf(int argc, char *argv[])
 				char *essid;
 				char *name;
 				essid = strtok(line, "=");
+				if(essid == NULL)
+					continue;
 				name = strtok(NULL, "=");
+				if(name == NULL)
+					continue;
 				char *mallessid, *mallname;
 				int essidlen = strlen(essid)+1;
 				int namelen = strlen(name);
